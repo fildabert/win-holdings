@@ -2,10 +2,19 @@ import { hash } from "@node-rs/argon2";
 import pg from "pg";
 
 const { Pool } = pg;
-const [, , email, password] = process.argv;
+const [, , emailArgument, passwordArgument] = process.argv;
+const email = emailArgument || process.env.ADMIN_EMAIL;
+const password = passwordArgument || process.env.ADMIN_PASSWORD;
 
 if (!email || !password) {
-    console.error("Usage: node scripts/create-admin.mjs <email> <password>");
+    console.error(
+        "Provide <email> <password> arguments or set ADMIN_EMAIL and ADMIN_PASSWORD.",
+    );
+    process.exit(1);
+}
+
+if (!process.env.DATABASE_URL) {
+    console.error("DATABASE_URL is required.");
     process.exit(1);
 }
 
